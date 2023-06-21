@@ -1,13 +1,9 @@
 # Cmd to run
 # Train
-CUDA_VISIBLE_DEVICES=0 python -m gns.train --mode=train --data_path=/home/jovyan/work/data_temp/fragment/Fragment/ --model_path=./models/Fragment/ --output_path=./rollouts/Fragment/ --batch_size=1 --noise_std=0.05 --connection_radius=20 --layers=5 --hidden_dim=32 --lr_init=0.001 --ntraining_steps=500000 --lr_decay_steps=150000 --dim=3 --project_name=Fragment-3D --run_name=ns0.05_R11_L5N32 --nsave_steps=5000 --log=False
-
-CUDA_VISIBLE_DEVICES=7 python -m gns.train --mode=train --data_path=./data/Concrete3D/ --model_path=./models/Concrete3D/ --output_path=./rollouts/Concrete3D/ --batch_size=1 --noise_std=0.001 --connection_radius=15 --layers=10 --lr_init=0.001 --ntraining_steps=300000 --lr_decay_steps=80000 --dim=3d --project_name=GNS-3D --run_name=ns1e-3 --log=False
+CUDA_VISIBLE_DEVICES=1 python -m gns.train --mode=train --data_path=/home/jovyan/work/data_temp/segment_beam/ --model_path=./models/segment_beam/ --output_path=./rollouts/segment_beam/ --batch_size=1 --noise_std=0.1 --connection_radius=15 --layers=5 --hidden_dim=64 --lr_init=0.001 --ntraining_steps=30000 --lr_decay_steps=9000 --dim=3 --project_name=Segment-3D --run_name=nsNS1_R15_L5N64 --nsave_steps=1000 --log=True
 
 # Rollout
-CUDA_VISIBLE_DEVICES=1 python -m gns.train -mode=rollout --data_path=/home/jovyan/work/data_temp/fragment/Fragment/ --model_path=./models/Fragment/ --model_file=ns0.01_R15_L5N32-model-25000.pt --output_path=./rollouts/Fragment/ --noise_std=0.01 --dim=3 --connection_radius=15 --layers=5 --hidden_dim=32
-
-CUDA_VISIBLE_DEVICES=5 python -m gns.train -mode=rollout --data_path=./data/Concrete2D-C-mps/ --model_path=./models/Concrete2D-C-mps/ --model_file=mps_bs2_ns6.7e-5_R0.01_I1M_proceassed-model-307000.pt --output_path=./rollouts/Concrete2D-C/ --noise_std=0.000067 --dim=2d --connection_radius=0.01
+CUDA_VISIBLE_DEVICES=1 python -m gns.train --mode=rollout --data_path=/home/jovyan/work/data_temp/segment_beam/ --model_path=./models/segment_beam/ --model_file=nsNS1_R15_L5N64/model-014000.pt --output_path=./rollouts/segment_beam/ --batch_size=1 --noise_std=0.1 --connection_radius=15 --layers=5 --hidden_dim=6 --dim=3
 
 # Visualisation
 python -m gns.render_rollout_1d --rollout_path=rollouts/Concrete1D/rollout_0.pkl --output_path=rollouts/Concrete1D/rollout_0.gif

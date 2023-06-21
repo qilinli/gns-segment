@@ -2,6 +2,7 @@ import collections
 import json
 import numpy as np
 import os
+import os.path as osp
 import sys
 import torch
 import pickle
@@ -32,7 +33,7 @@ flags.DEFINE_string('output_path', 'rollouts/', help='The path for saving output
 # Model parameters
 flags.DEFINE_float('connection_radius', 0.03, help='connectivity radius for graph.')
 flags.DEFINE_integer('layers', 10, help='Number of GNN layers.')
-flags.DEFINE_integer('hidden_dim', 32, help='Number of neurons in hidden layers.')
+flags.DEFINE_integer('hidden_dim', 64, help='Number of neurons in hidden layers.')
 flags.DEFINE_integer('dim', 3, help='The dimension of concrete simulation.')
 
 # Training parameters
@@ -62,8 +63,8 @@ FLAGS = flags.FLAGS
 
 Stats = collections.namedtuple('Stats', ['mean', 'std'])
 
-INPUT_SEQUENCE_LENGTH = 3  # So we can calculate the last 5 velocities.
-NUM_PARTICLE_TYPES = 2
+INPUT_SEQUENCE_LENGTH = 6  # So we can calculate the last 5 velocities.
+NUM_PARTICLE_TYPES = 5
 KINEMATIC_PARTICLE_ID = 10
 
 
@@ -260,14 +261,10 @@ def train(
                 loss_xy = loss_pos.mean(axis=0)  # for log purpose
 
                 # if 1d, compute loss on x-axis only
-                if FLAGS.dim == 1:
-                    loss_pos = loss_pos[:, 0]
-                else:
-                    loss_pos = loss_pos.sum(dim=-1)
+                loss_pos = loss_pos.sum(dim=-1)
 
                 # Calculate loss
                 loss_strain = (pred_strain - next_strain) ** 2
-                if FLAGS.dim == 1: loss_strain *= 0.   # Ignore strain for 1d
                 loss = loss_pos + loss_strain
                 num_non_kinematic = non_kinematic_mask.sum()
                 loss = torch.where(non_kinematic_mask.bool(), loss, torch.zeros_like(loss))
@@ -349,12 +346,16 @@ def train(
                         
                         # Save the current best model based on eval loss
                         if eval_loss_mean < lowest_eval_loss:
-                            print(f"===================Better model obtained. Saving...=============================")
+                            print(f"===================Better model obtained.=============================")
                             lowest_eval_loss = eval_loss_mean
-                            if step > 10000:
-                                simulator.save(model_path + FLAGS.run_name + '-model-' + str(step) + '.pt')
+                            if step > 1000:
+                                print(f"===================Saving.=============================")
+                                save_dir = osp.join(model_path, FLAGS.run_name)
+                                if not os.path.exists(save_dir):
+                                    os.makedirs(save_dir)
+                                simulator.save(osp.join(save_dir, f'model-{step:06}.pt'))
                                 train_state = dict(optimizer_state=optimizer.state_dict(), global_train_state={"step": step})
-                                torch.save(train_state, f"{model_path}{FLAGS.run_name}-train_state-{step}.pt")
+                                #torch.save(train_state, osp.join(save_dir, f'train_state-{step:06}.pt'))
 
                         # log
                         log["val/loss"] = sum(eval_loss_total) / len(eval_loss_total)
@@ -376,9 +377,12 @@ def train(
     except KeyboardInterrupt:
         pass
 
-    simulator.save(model_path + FLAGS.run_name + '-model-' + str(step) + '.pt')
+    save_dir = osp.join(model_path, FLAGS.run_name)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    simulator.save(osp.join(save_dir, f'model-{step:06}.pt'))
     train_state = dict(optimizer_state=optimizer.state_dict(), global_train_state={"step": step})
-    torch.save(train_state, f"{model_path}{FLAGS.run_name}-train_state-{step}.pt")
+    torch.save(train_state, osp.join(save_dir, f'train_state-{step:06}.pt'))
 
 
 def _get_simulator(
@@ -413,7 +417,7 @@ def _get_simulator(
     
     simulator = learned_simulator.LearnedSimulator(
         particle_dimensions=FLAGS.dim,  # xyz
-        nnode_in=(INPUT_SEQUENCE_LENGTH - 1) * FLAGS.dim + 9,  # timesteps * 3 (dim) + 9 (particle type embedding) + 6 boundary distance 
+        nnode_in=(INPUT_SEQUENCE_LENGTH - 1) * FLAGS.dim + 9 + 6,  # timesteps * 3 (dim) + 9 (particle type embedding) + 6 boundary distance 
         nedge_in=FLAGS.dim + 1,    # input edge features, relative displacement in all dims + distance between two nodes
         latent_dim=FLAGS.hidden_dim,
         nmessage_passing_steps=FLAGS.layers,

@@ -83,9 +83,9 @@ class Render():
         :return: gif format animation
         """
         # Init figures
-        fig = plt.figure(figsize=(8, 8))
-        ax1 = fig.add_subplot(2, 1, 1, projection='3d')
-        ax2 = fig.add_subplot(2, 1, 2, projection='3d')
+        fig = plt.figure(figsize=(10, 10))
+        ax1 = fig.add_subplot(1, 2, 1, projection='3d')
+        ax2 = fig.add_subplot(1, 2, 2, projection='3d')
         axes = [ax1, ax2]
 
         # Define datacase name
@@ -108,7 +108,7 @@ class Render():
 
             fig.clear()
             for j, datacase in enumerate(trajectory_datacases):
-                axes[j] = fig.add_subplot(2, 1, j+1, projection='3d')
+                axes[j] = fig.add_subplot(1, 2, j+1, projection='3d')
                 axes[j].set_box_aspect([xboundary[1] - xboundary[0], 
                                        yboundary[1] - yboundary[0], 
                                        zboundary[1] - zboundary[0]])
@@ -153,7 +153,6 @@ def main(_):
         vertical_camera_angle = 20
         viewpoint_rotation = 0
         roll = 0
-        STRAIN_MEAN, STRAIN_STD = 0.5426821307442955, 0.7741500060379738
     else:
         vertical_camera_angle = 10
         viewpoint_rotation = 0.5

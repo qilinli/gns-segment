@@ -129,11 +129,11 @@ class LearnedSimulator(nn.Module):
         most_recent_position, nparticles_per_example, self._connectivity_radius)
     
     # Debug graph connection
-    # print("==There are {}-{}-{}-{}-{} edges per node.".format(sum(receivers == 17120), sum(receivers == 51411),sum(receivers == 1820), sum(receivers==33000), sum(receivers==4000)))
-    # for i in range(len(receivers)):
-    #     if receivers[i] == 17120:
-    #         print(f"r==1712: {senders[i]} -> {receivers[i]}")
-    # print(f"knn={sum(receivers == 17120)}")
+#     print("==There are {}-{}-{}-{}-{} edges per node.".format(sum(receivers == 17120), sum(receivers == 21411),sum(receivers == 1820), sum(receivers==33000), sum(receivers==4000)))
+#     for i in range(len(receivers)):
+#         if receivers[i] == 17120:
+#             print(f"r==1712: {senders[i]} -> {receivers[i]}")
+#     print(f"knn={sum(receivers == 17120)}")
             
     node_features = []
 
@@ -147,23 +147,21 @@ class LearnedSimulator(nn.Module):
     # node_features shape (nparticles, 5 * 2 = 10)
     node_features.append(flat_velocity_sequence)
 
-    # Normalized clipped distances to lower and upper boundaries.
+    # Normalized distances to lower and upper boundaries.
     # boundaries are an array of shape [num_dimensions, 2], where the second
     # axis, provides the lower/upper boundaries.
-    # boundaries = torch.tensor(
-    #     self._boundaries, requires_grad=False).float().to(self._device)
-    # distance_to_lower_boundary = (
-    #     most_recent_position - boundaries[:, 0][None])
-    # distance_to_upper_boundary = (
-    #     boundaries[:, 1][None] - most_recent_position)
-    # distance_to_boundaries = torch.cat(
-    #     [distance_to_lower_boundary, distance_to_upper_boundary], dim=1)
+    boundaries = torch.tensor(
+        self._boundaries, requires_grad=False).float().to(self._device)
+    distance_to_lower_boundary = 2*((
+        most_recent_position - boundaries[:, 0][None]) / (boundaries[:, 1][None] - boundaries[:, 0][None]) - 0.5)
+    distance_to_upper_boundary = 2*((
+        boundaries[:, 1][None] - most_recent_position) / (boundaries[:, 1][None] - boundaries[:, 0][None]) - 0.5)
+    distance_to_boundaries = torch.cat(
+        [distance_to_lower_boundary, distance_to_upper_boundary], dim=1)
+    normalized_distance_to_boundaries = distance_to_boundaries
     # normalized_clipped_distance_to_boundaries = torch.clamp(
     #     distance_to_boundaries / self._connectivity_radius, -1., 1.)
-    # ## The distance to 4 boundaries (top/bottom/left/right), correspond to x_min, y_min, x_max, y_max
-    # ## node_features shape (nparticles, 10+4)
-    # node_features.append(normalized_clipped_distance_to_boundaries)
-    # node_features.append(normalized_clipped_distance_to_boundaries[:, 0:1])  # only the left boundary, x_min
+    node_features.append(normalized_distance_to_boundaries)
     
     # Particle type
     if self._nparticle_types > 1:
