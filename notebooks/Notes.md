@@ -3,7 +3,7 @@
 CUDA_VISIBLE_DEVICES=1 python -m gns.train --mode=train --data_path=/home/jovyan/work/data_temp/segment_beam/ --model_path=./models/segment_beam/ --output_path=./rollouts/segment_beam/ --batch_size=1 --noise_std=0.1 --connection_radius=15 --layers=5 --hidden_dim=64 --lr_init=0.001 --ntraining_steps=30000 --lr_decay_steps=9000 --dim=3 --project_name=Segment-3D --run_name=nsNS1_R15_L5N64 --nsave_steps=1000 --log=True
 
 # Rollout
-CUDA_VISIBLE_DEVICES=1 python -m gns.train --mode=rollout --data_path=/home/jovyan/work/data_temp/segment_beam/ --model_path=./models/segment_beam/ --model_file=nsNS1_R15_L5N64/model-014000.pt --output_path=./rollouts/segment_beam/ --batch_size=1 --noise_std=0.1 --connection_radius=15 --layers=5 --hidden_dim=6 --dim=3
+CUDA_VISIBLE_DEVICES=3 python -m gns.train --mode=rollout --data_path=/home/jovyan/work/data_temp/segment_beam/ --model_path=./models/segment_beam/ --model_file=NS0.1_R20_L5N96_BoundD/model-013000.pt --output_path=./rollouts/segment_beam/ --batch_size=1 --noise_std=0.1 --connection_radius=15 --layers=5 --hidden_dim=96 --dim=3
 
 # Visualisation
 python -m gns.render_rollout_1d --rollout_path=rollouts/Concrete1D/rollout_0.pkl --output_path=rollouts/Concrete1D/rollout_0.gif

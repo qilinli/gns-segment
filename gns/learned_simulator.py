@@ -129,11 +129,11 @@ class LearnedSimulator(nn.Module):
         most_recent_position, nparticles_per_example, self._connectivity_radius)
     
     # Debug graph connection
-#     print("==There are {}-{}-{}-{}-{} edges per node.".format(sum(receivers == 17120), sum(receivers == 21411),sum(receivers == 1820), sum(receivers==33000), sum(receivers==4000)))
-#     for i in range(len(receivers)):
-#         if receivers[i] == 17120:
-#             print(f"r==1712: {senders[i]} -> {receivers[i]}")
-#     print(f"knn={sum(receivers == 17120)}")
+    # print("==There are {}-{}-{}-{}-{} edges per node.".format(sum(receivers == 17120), sum(receivers == 21411),sum(receivers == 1820), sum(receivers==33000), sum(receivers==4000)))
+    # for i in range(len(receivers)):
+    #     if receivers[i] == 17120:
+    #         print(f"r==1712: {senders[i]} -> {receivers[i]}")
+    # print(f"knn={sum(receivers == 17120)}")
             
     node_features = []
 

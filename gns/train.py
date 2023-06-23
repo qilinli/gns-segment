@@ -32,7 +32,7 @@ flags.DEFINE_string('output_path', 'rollouts/', help='The path for saving output
 
 # Model parameters
 flags.DEFINE_float('connection_radius', 0.03, help='connectivity radius for graph.')
-flags.DEFINE_integer('layers', 10, help='Number of GNN layers.')
+flags.DEFINE_integer('layers', 5, help='Number of GNN layers.')
 flags.DEFINE_integer('hidden_dim', 64, help='Number of neurons in hidden layers.')
 flags.DEFINE_integer('dim', 3, help='The dimension of concrete simulation.')
 
