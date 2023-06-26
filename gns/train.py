@@ -65,7 +65,7 @@ Stats = collections.namedtuple('Stats', ['mean', 'std'])
 
 INPUT_SEQUENCE_LENGTH = 6  # So we can calculate the last 5 velocities.
 NUM_PARTICLE_TYPES = 5
-KINEMATIC_PARTICLE_ID = 10
+KINEMATIC_PARTICLE_ID = -1
 
 
 def predict(
