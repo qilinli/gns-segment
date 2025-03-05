@@ -64,7 +64,7 @@ FLAGS = flags.FLAGS
 Stats = collections.namedtuple('Stats', ['mean', 'std'])
 
 INPUT_SEQUENCE_LENGTH = 6  # So we can calculate the last 5 velocities.
-NUM_PARTICLE_TYPES = 5
+NUM_PARTICLE_TYPES = 2
 KINEMATIC_PARTICLE_ID = -1
 
 
@@ -287,7 +287,8 @@ def train(
                 log["train/loss"] = loss
                 log["train/loss-x"] = loss_xy[0]
                 log["train/loss-y"] = loss_xy[1]
-                log["train/loss-z"] = loss_xy[2]
+                if FLAGS.dim == 3:
+                    log["train/loss-z"] = loss_xy[2]
                 log["train/loss-strain"] = loss_strain.mean()
                 log["lr"] = lr_new
 
@@ -413,11 +414,9 @@ def _get_simulator(
         },
     }
     
-    # num_boundary_fea = 4 if FLAGS.dim == '1d' else 4 #qilin
-    
     simulator = learned_simulator.LearnedSimulator(
         particle_dimensions=FLAGS.dim,  # xyz
-        nnode_in=(INPUT_SEQUENCE_LENGTH - 1) * FLAGS.dim + 9 + 6,  # timesteps * 3 (dim) + 9 (particle type embedding) + 6 boundary distance 
+        nnode_in=(INPUT_SEQUENCE_LENGTH - 1) * FLAGS.dim + 2 * FLAGS.dim + 9,  # timesteps * dim (past velocity data) + 2 * dim (min and max boundary distance each dim) + 9 (particle type embedding)
         nedge_in=FLAGS.dim + 1,    # input edge features, relative displacement in all dims + distance between two nodes
         latent_dim=FLAGS.hidden_dim,
         nmessage_passing_steps=FLAGS.layers,

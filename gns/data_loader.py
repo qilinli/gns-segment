@@ -9,7 +9,7 @@ class SamplesDataset(torch.utils.data.Dataset):
         # data is loaded as dict of tuples
         # of the form (positions, particle_type)
         # convert to list of tuples
-        self._data = [item for _, item in np.load(path, allow_pickle=True).items()]
+        self._data = [item for _, item in np.load(path, allow_pickle=True)['trajectories'].item().items()]
 
         # length of each trajectory in the dataset
         # excluding the input_length_sequence
