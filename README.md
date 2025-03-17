@@ -84,7 +84,8 @@ python -m gns.train --mode=rollout \
 
 ### 5. Visualize Results  
 ```bash
-python -m gns.render_rollout_2d_T --rollout_path={OUTPUT_PATH}/rollout_test_1.pkl --output_path={OUTPUT_PATH}/rollout_test_1.gif`
+python -m gns.render_rollout_2d_T --rollout_path={OUTPUT_PATH}/rollout_test_1.pkl \
+                                  --output_path={OUTPUT_PATH}/rollout_test_1.gif
 ```
 
 ## Notes  
